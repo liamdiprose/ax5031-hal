@@ -1,0 +1,296 @@
+# Register Control Map
+# from Table 17 of ON AX5031 documentation
+# https://www.onsemi.com/pub/Collateral/AX5031-D.PDF
+
+
+registers: 
+# Revision & Interface Probing
+- addr: 0x0
+  name: REVISION
+  dir: R
+  reset: "00100001" 
+  desc: Silicon Revision
+  
+- addr: 0x1
+  name: SCRATCH
+  dir: RW
+  reset: "11000101" 
+  desc: Scratch Register
+  
+  
+# Operating Mode
+  
+- addr: 0x2
+  name: PWRMODE
+  dir: RW
+  reset: "011-0000" 
+  desc: Power Mode
+  
+  
+# Crystal Oscillator, Part 1
+  
+- addr: 0x3 
+  name: XTALOSC
+  dir: RW 
+  reset: "----0010"
+  desc: FIFO, Part 1
+  
+- addr: 0x4 
+  name: FIFOCTRL
+  dir: RW 
+  reset: "------11" 
+  desc: FIFO Control
+  
+- addr: 0x5 
+  name: FIFODATA
+  dir: RW 
+  reset: "--------" 
+  desc: FIFO Data
+  
+# Interrupt Control
+  
+- addr: 0x6 
+  name: IRQMASK
+  dir: RW 
+  reset: "-0000000"
+  desc: IRQ Mask
+  
+- addr: 0x7 
+  name: IRQREQUEST 
+  dir: R 
+  reset: "--------"
+  desc: IRQ Request
+  
+  
+# Interface & Pin Control
+  
+- addr: 0x0C 
+  name: PINCFG1
+  dir: RW 
+  reset: "00101000"
+  desc: Pin Configuration 1
+  
+- addr: 0x0D 
+  name: PINCFG2
+  dir: RW 
+  reset: "00000000"
+  desc: Pin Configuration 2
+  
+- addr: 0x0E 
+  name: PINCFG3
+  dir: RW 
+  reset: "0-------"
+  desc: Pin Configuration 3
+  
+- addr: 0x0F 
+  name: IRQINVERSION 
+  dir: RW 
+  reset: "-0000000"
+  desc: IRQ Inversion
+  
+# Modulation & Framing
+  
+- addr: 0x10 
+  name: MODULATION 
+  dir: RW 
+  reset: "-0000010"
+  desc: Modulation
+  
+- addr: 0x11 
+  name: ENCODING
+  dir: RW 
+  reset: "---00010"
+  desc: Encoder/Decoder Settings
+  
+- addr: 0x12 
+  name: FRAMING
+  dir: RW 
+  reset: "-0000000"
+  desc: Framing settings
+  
+- addr: 0x14 
+  name: CRCINIT3
+  dir: RW 
+  reset: "11111111" 
+  desc: CRC Initialization Data or Preamble
+  
+- addr: 0x15 
+  name: CRCINIT2
+  dir: RW
+  reset: "11111111" 
+  desc: CRC Initialization Data or Preamble
+  
+- addr: 0x16 
+  name: CRCINIT1
+  dir: RW 
+  reset: "11111111" 
+  desc: CRC Initialization Data or Preamble
+  
+- addr: 0x17 
+  name: CRCINIT0
+  dir: RW 
+  reset: "11111111" 
+  desc: CRC Initialization Data or Preamble
+  
+
+# Voltage Regulator
+  
+- addr: 0x1B 
+  name: VREG
+  dir: R 
+  reset: "--------"
+  desc: Voltage Regulator Status
+  
+
+# Synthesizer 
+  
+- addr: 0x1C 
+  name: FREQB3 
+  dir: RW 
+  reset: "00111001" 
+  desc: 2nd Synthesizer Frequency 
+  
+- addr: 0x1D 
+  name: FREQB2 
+  dir: RW
+  reset: "00110100"
+  desc: 2nd Synthesizer Frequency 
+  
+- addr: 0x1E 
+  name: FREQB1 
+  dir: RW 
+  reset: "11001100" 
+  desc: 2nd Synthesizer Frequency 
+  
+- addr: 0x1F 
+  name: FREQB0
+  dir: RW 
+  reset: "11001101"
+  desc: 2nd Synthesizer Frequency 
+  
+- addr: 0x20 
+  name: FREQ3
+  dir: RW 
+  reset: "00111001" 
+  desc: Synthesizer Frequency
+  
+- addr: 0x21 
+  name: FREQ2
+  dir: RW 
+  reset: "00110100" 
+  desc: Synthesizer Frequency
+  
+- addr: 0x22 
+  name: FREQ1
+  dir: RW 
+  reset: "11001100" 
+  desc: Synthesizer Frequency
+  
+- addr: 0x23 
+  name: FREQ0
+  dir: RW 
+  reset: "11001101" 
+  desc: Synthesizer Frequency
+  
+- addr: 0x25 
+  name: FSKDEV2
+  dir: RW 
+  reset: "00000010" 
+  desc: FSK Frequency Deviation
+  
+- addr: 0x26 
+  name: FSKDEV1
+  dir: RW 
+  reset: "01100110" 
+  desc: FSK Frequency Deviation
+  
+- addr: 0x27 
+  name: FSKDEV0
+  dir: RW 
+  reset: "01100110" 
+  desc: FSK Frequency Deviation
+  
+- addr: 0x2C 
+  name: PLLLOOP
+  dir: RW 
+  reset: "00011101" 
+  desc: Synthesizer Loop Filter Settings
+  
+- addr: 0x2D 
+  name: PLLRANGING 
+  dir: RW 
+  reset: "00001000" 
+  desc: Synthesizer VCO Auto-Ranging
+  
+  
+# Transmitter
+  
+- addr: 0x30 
+  name: TXPWR
+  dir: RW 
+  reset: "----1000"
+  desc: Transmit Power
+  
+- addr: 0x31 
+  name: TXRATEHI
+  dir: RW 
+  reset: "00001001" 
+  desc: Transmitter Bitrate
+  
+- addr: 0x32 
+  name: TXRATEMID 
+  dir: RW 
+  reset: "10011001" 
+  desc: Transmitter Bitrate
+  
+- addr: 0x33 
+  name: TXRATELO
+  dir: RW 
+  reset: "10011010" 
+  desc: Transmitter Bitrate
+  
+- addr: 0x34 
+  name: MODMISC
+  dir: RW 
+  reset: "--------"
+  desc: Misc RF Flags
+  
+  
+# FIFO, Part 2
+  
+- addr: 0x35 
+  name: FIFOCOUNT 
+  dir: R 
+  reset: "--000000"
+  desc: FIFO Fill State
+  
+- addr: 0x36 
+  name: FIFOTHRESH 
+  dir: RW 
+  reset: "--000000"
+  desc: FIFO Threshold
+  
+- addr: 0x37 
+  name: FIFOCONTROL 
+  dir: RW 
+  reset: "0-----00"
+  desc: Additional FIFO Control
+  
+
+# Crystal Oscillator, Part 2
+  
+- addr: 0x4F 
+  name: XTALCAP
+  dir: RW 
+  reset: "--000000"
+  desc: Crystal oscillator tuning capacitance
+  
+  
+# 4-FSK Control
+  
+- addr: 0x50 
+  name: FOURFSK
+  dir: RW 
+  reset: "-------0"
+  desc: 4-FSK Control
+

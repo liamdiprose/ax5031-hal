@@ -1,0 +1,11 @@
+[package]
+name = "ax5031"
+version = "0.1.0"
+authors = ["Liam Diprose <ldi30@uclive.ac.nz>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+embedded-hal = "0.2.2"
+nb = "*"

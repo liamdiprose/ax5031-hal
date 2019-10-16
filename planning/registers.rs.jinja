@@ -1,0 +1,33 @@
+
+trait Register {
+    const fn register(&self) -> u8;
+    const fn reset(&self) -> u8;
+}
+
+
+enum ControlRegisters {
+{% for reg in registers %}
+    ///[Address: {{ '%0X' % reg.addr }}] {{ reg.desc }}
+    {{ reg.name }},
+{% endfor %}
+}
+
+
+impl Register for ControlRegisters {
+
+    fn register(&self) -> u8 {
+        match self {
+            {% for reg in registers %}ControlRegisters::{{ reg.name }} => 0x{{ '%00x'  % reg.addr }},
+            {% endfor %}
+        }
+    }
+
+    fn reset(&self) -> u8 {
+        unimplemented!()
+    }
+}
+
+
+
+
+// vim: filetype=rust
