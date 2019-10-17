@@ -1,5 +1,5 @@
 #![allow(unused_must_use)]
-use crate::registers::{ControlRegister, PowerMode, Modulation, FramingMode, Status};
+use crate::registers::{ControlRegister, Register, PowerMode, Modulation, FramingMode, Status};
 
 use crate::nb::block;
 
@@ -58,9 +58,9 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
     fn create_frame(action: SpiAction) -> u16 {
         match action {
             SpiAction::Read(addr) =>
-                0 << 15 | ((addr as u16) & 0x3F) << 8,
+                0 << 15 | ((addr.register() as u16) & 0x7F) << 8,
             SpiAction::Write(addr, data) =>
-                1 << 15 | ((addr as u16) & 0x3F) << 8 | (data as u16),
+                1 << 15 | ((addr.register() as u16) & 0x7F) << 8 | (data as u16) & 0xFF,
         }
     }
 
@@ -68,7 +68,8 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
     //}
 
     fn set_register(&mut self, reg: ControlRegister, val: u8) -> Result<[u8; 2], Ax5031Error> {
-        self.send(Self::create_frame(SpiAction::Write(reg, val)))
+        let frame = Self::create_frame(SpiAction::Write(reg, val));
+        self.send(frame)
     }
 
     fn get_register(&mut self, reg: ControlRegister) -> Result<u8, Ax5031Error> {
@@ -117,10 +118,10 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
     pub fn set_power_mode(&mut self, power_mode: PowerMode) -> Result<(), Ax5031Error> {
         let bits = match power_mode {
             PowerMode::PowerDown => 0x0,
-            PowerMode::VoltageRegulatorOn => 0x8,
-            PowerMode::Standby => 0x9,
-            PowerMode::SynthTx => 0xA,
-            PowerMode::FullTx => 0xB
+            PowerMode::VoltageRegulatorOn => 0x4,
+            PowerMode::Standby => 0x5,
+            PowerMode::SynthTx => 0xC,
+            PowerMode::FullTx => 0xD
         };
 
         self.set_register(ControlRegister::PWRMODE, bits);
@@ -145,10 +146,15 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
         // Poor mans `.ceil`:
         let freq = (freq + 1.0) as u32;
 
-        self.set_register(ControlRegister::FREQ3, (freq >> 24 & 0xFF) as u8);
-        self.set_register(ControlRegister::FREQ2, (freq >> 16 & 0xFF) as u8);
-        self.set_register(ControlRegister::FREQ1, (freq >> 8 & 0xFF) as u8);
-        self.set_register(ControlRegister::FREQ0, (freq >> 0 & 0xFF) as u8);
+        let p3 = (freq >> 24 & 0xFF) as u8;
+        let p2 = (freq >> 16 & 0xFF) as u8;
+        let p1 = (freq >> 8 & 0xFF) as u8;
+        let p0 = (freq >> 0 & 0xFF) as u8;
+
+        self.set_register(ControlRegister::FREQ3, p3)?;
+        self.set_register(ControlRegister::FREQ2, p2)?;
+        self.set_register(ControlRegister::FREQ1, p1)?;
+        self.set_register(ControlRegister::FREQ0, p0)?;
 
         Ok(())
     }
@@ -170,7 +176,7 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
 
     pub fn set_transmit_bitrate(&mut self, bitrate: u16) -> Result<(), ()> {
         let crystal_frequency: u32 = 16_000_000;
-        let txrate = f64::from((bitrate as u32 / crystal_frequency).pow(24)) + 0.5;
+        let txrate = f64::from((bitrate as u64 * 2u64.pow(24) / crystal_frequency as u64) as u32) + 0.5;
         let txrate = (txrate + 1.0) as u32;
 
         let txrate = txrate & 0x001FFFFF;
@@ -209,12 +215,12 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
         Err(())
     }
 
-    pub fn autoranging(&mut self) -> Result<(), Ax5031Error> {
+    pub fn autoranging(&mut self) -> Result<u16, Ax5031Error> {
         let start_pattern = 8;
 
         self.set_register(ControlRegister::PLLRANGING, start_pattern);
 
-        for _ in 0..300 {
+        for i in 0..3000 {
             let pllranging = self.get_register(ControlRegister::PLLRANGING)?;
 
             let rngstart = pllranging >> 4 & 1;
@@ -226,7 +232,7 @@ where SPI: embedded_hal::spi::FullDuplex<u8>,
             if rngerr == 1 {
                 return Err(Ax5031Error::AutoRangingError);
             } else {
-                return Ok(())
+                return Ok(i)
             }
         }
         Err(Ax5031Error::AutoRangingTimeout)

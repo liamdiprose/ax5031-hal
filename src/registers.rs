@@ -1,5 +1,5 @@
 
-trait Register {
+pub trait Register {
     fn register(&self) -> u8;
     fn reset(&self) -> u8;
 }
