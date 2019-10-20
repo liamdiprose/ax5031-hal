@@ -234,12 +234,16 @@ pub struct Status {
 impl Status {
     pub fn from_register(status_register: u8) -> Self {
         Status {
-            pll_lock: get_bit(status_register, 1),
-            fifo_over: get_bit(status_register, 1),
-            fifo_under: get_bit(status_register, 1),
-            fifo_full: get_bit(status_register, 1),
-            fifo_empty: get_bit(status_register, 1),
-            fifo_status: status_register >> 6 & 0x3
+            pll_lock: get_bit(status_register, 6),
+            fifo_over: get_bit(status_register, 5),
+            fifo_under: get_bit(status_register, 4),
+            fifo_full: get_bit(status_register, 3),
+            fifo_empty: get_bit(status_register, 2),
+            fifo_status: status_register & 0x3
         }
     }
+}
+
+pub enum Encoding {
+    NonReturnZero
 }
